@@ -1,4 +1,3 @@
-typealias CppType{T} Cxx.CppValue{Cxx.CppBaseType{T}}
 CxxInterval = CppType{symbol("ibex::Interval")}
 
 type Interval
@@ -19,189 +18,45 @@ mid(x::Interval) = icxx"$(x.data).mid());"
 rad(x::Interval) = icxx"$(x.data).rad();"
 mig(x::Interval) = icxx"$(x.data).mig();"
 
-
-# mig() const;
-
-#     /**
-#      * \brief Magnitude.
-#    *
-#      * Returns the magnitude of *this:
-#      * mag(*this)=max(|lower bound|, |upper bound|). */
-#     double mag() const;
-
-#     /**
-#      * \brief True iff this interval is a subset of \a x.
-#      *
-#      * \note Always return true if *this is empty.
-#      */
-#     bool is_subset(const Interval& x) const;
-
-#     /**
-#      * \brief True iff this interval is a subset of \a x and not \a x itself.
-#      *
-#      * \note In particular, (-oo,oo) is not a strict subset of (-oo,oo)
-#      * and the empty set is not a strict subset of the empty set although
-#      * in both cases, the first is inside the interior of the second.
-#      */
-#     bool is_strict_subset(const Interval& x) const;
-
-#     /**
-#      * \brief True iff this interval is in the interior of \a x.
-#      *
-#     * \note In particular, (-oo,oo) is in the interior of (-oo,oo)
-#      * and the empty set is in the interior of the empty set.
-#      * \note Always return true if *this is empty.
-#      */
-#     bool is_interior_subset(const Interval& x) const;
-
-#     /**
-#      * \brief True iff this interval is in the interior of \a x and different from x.
-#      *
-#      * \note In particular, (-oo,oo) is not "strictly" in the interior of (-oo,oo)
-#      * and the empty set is not "strictly" in the interior of the empty set.
-#      */
-#     bool is_strict_interior_subset(const Interval& x) const;
-
-#     /**
-#      * \brief True iff this interval is a superset of \a x.
-#      *
-#      * \note Always return true if x is empty.
-#      */
-#     bool is_superset(const Interval& x) const;
-
-#     /**
-#      * \brief True iff this interval is a superset of \a x different from x.
-#      *
-#      * \see #is_strict_subset(const Interval&) const.
-#      */
-#     bool is_strict_superset(const Interval& x) const;
-
-#     /**
-#      * \brief True iff *this contains \a d.
-#      *
-#      * \note d can also be an "open bound", i.e., infinity.
-#      * So this function is not restricted to a set-membership
-#      * interpretation.
-#      */
-#     bool contains(const double& d) const;
-
-#     /**
-#      * \brief True iff the interior of *this contains \a d.
-#      *
-#      */
-#     bool interior_contains(const double& d) const;
-
-#     /**
-#      * \brief True iff *this and \a x intersect.
-#      */
-#     bool intersects(const Interval &x) const;
-
-#     /**
-#      * \brief True iff *this and \a x intersect and the intersection has a non-null volume.
-#      *
-#      * Equivalently, some interior points (of this or x) must belong to the intersection.
-#      */
-#     bool overlaps(const Interval &x) const;
-
-#     /**
-#      * \brief True iff *this and \a x do not intersect.
-#      *
-#      */
-#     bool is_disjoint(const Interval &x) const;
-
-#     /**
-#      * \brief True iff *this is empty.
-#      */
-#     bool is_empty() const;
-
-#     /**
-#      * \brief True iff *this is degenerated.
-#      *
-#      * An interval is degenerated if it is of the form [a, a]
-#      *
-#      * \note An empty interval is considered here as degenerated. */
-#     bool is_degenerated() const;
-
-#     /**
-#      * \brief True if one bound of *this is infinite.
-#      *
-#      * \note An empty interval is always bounded.
-#      */
-#     bool is_unbounded() const;
-
-#     /**
-#      * \brief True iff *this can be bisected into two non-degenerated intervals.
-#      *
-#      * Examples of non bisectable intervals are [0,next_float(0)] or [DBL_MAX,+oo).
-#      */
-#     bool is_bisectable() const;
-
-#     /**
-#      * \brief Relative Hausdorff distance between *this and x.
-#      *
-#      * The relative distance is basically distance(x)/diam(*this).
-#      * \see #ibex::distance (const ibex::Interval &x1, const ibex::Interval &x2).
-#      */
-#     double rel_distance(const Interval& x) const;
-
+# True iff this interval is a subset of \a x.
+is_subset(x::Interval, y::Interval) = icxx"$(x.data).is_subset($(y.data));"
+is_strict_subset(x::Interval, y::Interval) = icxx"$(x.data).is_strict_subset($(y.data));"
+is_interior_subset(x::Interval, y::Interval) = icxx"$(x.data).is_interior_subset($(y.data));"
+is_strict_interior_subset(x::Interval, y::Interval) = icxx"$(x.data).istrict_s_interior_subset($(y.data));"
+is_superset(x::Interval, y::Interval) = icxx"$(x.data).is_superset($(y.data));"
+is_strict_superset(x::Interval, y::Interval) = icxx"$(x.data).is_strict_superset($(y.data));"
+contains(x::Interval, d::Float64) = icxx"$(x.data).contains($d);"
+interior_contains(x::Interval, d::Float64) = icxx"$(x.data).interior_contains($d);"
+intersects(x::Interval, y::Interval) = icxx"$(x.data).intersects($(y.data));"
+overlaps(x::Interval, y::Interval) = icxx"$(x.data).overlaps($(y.data));"
+is_disjoint(x::Interval, y::Interval) = icxx"$(x.data).is_disjoint($(y.data));"
+is_empty(x::Interval) = icxx"$(x.data).is_empty();"
+is_degenerated(x::Interval) = icxx"$(x.data).is_degenerated();"
+is_unbounded(x::Interval) = icxx"$(x.data).is_unbounded();"
+is_bisectable(x::Interval) = icxx"$(x.data).is_bisectable();"
+rel_distance(x::Interval, y::Interval) = icxx"$(x.data).rel_distance($(y.data));"
 #     /*
 #      * \brief The complementary of x.
 #      */
 #     int complementary(Interval& c1, Interval& c2) const;
 
-#     /**
-#      * \brief x\y
-#      */
-#     int diff(const Interval& y, Interval& c1, Interval& c2) const;
-
-#     /** \brief Return -*this. */
-#     Interval operator-() const;
-
-#     /** \brief Add \a d to *this and return the result.  */
-#     Interval& operator+=(double d);
-
-#     /** \brief Subtract \a d to *this and return the result. */
-#     Interval& operator-=(double d);
-
-#     /** \brief Multiply *this by \a d and return the result. */
-#     Interval& operator*=(double d);
-
-#     /** \brief Divide *this by \a d and return the result. */
-#     Interval& operator/=(double d);
-
-#     /** \brief Add \a x to *this and return the result. */
-#     Interval& operator+=(const Interval& x);
-
-#     /** \brief Subtract \a x to *this and return the result. */
-#     Interval& operator-=(const Interval& x);
-
-#     /** \brief Multiply *this by \a x and return the result. */
-#     Interval& operator*=(const Interval& x);
-
-#     /**
-#      * \brief Divide *this by \a x and return the result.
-#      *
-#      * Does better than *this=*this/x: because calculates
-#      * the union of *this/x as intermediate result. */
-#     Interval& operator/=(const Interval& x);
-
 ## Interval Arithmetic
 ## ===================
 (*)(x::Interval, y::Interval) = icxx"$(x.data) * $(y.data);"
-(*)(x::Interval,d::Float64) = icxx"$(x.data) * $d;"
-(*)(x::Interval,d::Float64) = icxx"$d * $(x.data);"
+(*)(x::Interval, d::Float64) = icxx"$(x.data) * $d;"
+(*)(x::Interval, d::Float64) = icxx"$d * $(x.data);"
 
 (+)(x::Interval, y::Interval) = icxx"$(x.data) + $(y.data);"
-(+)(x::Interval,d::Float64) = icxx"$(x.data) + $d;"
-(+)(x::Interval,d::Float64) = icxx"$d + $(x.data);"
+(+)(x::Interval, d::Float64) = icxx"$(x.data) + $d;"
+(+)(x::Interval, d::Float64) = icxx"$d + $(x.data);"
 
 (-)(x::Interval, y::Interval) = icxx"$(x.data) - $(y.data);"
-(-)(x::Interval,d::Float64) = icxx"$(x.data) - $d;"
-(-)(x::Interval,d::Float64) = icxx"$d - $(x.data);"
+(-)(x::Interval, d::Float64) = icxx"$(x.data) - $d;"
+(-)(x::Interval, d::Float64) = icxx"$d - $(x.data);"
 
 (/)(x::Interval, y::Interval) = icxx"$(x.data) / $(y.data);"
-(/)(x::Interval,d::Float64) = icxx"$(x.data) / $d;"
-(/)(x::Interval,d::Float64) = icxx"$d / $(x.data);"
+(/)(x::Interval, d::Float64) = icxx"$(x.data) / $d;"
+(/)(x::Interval, d::Float64) = icxx"$d / $(x.data);"
 
 # And/Or
 cxx"""
@@ -323,6 +178,20 @@ bwd_min!(y::Interval, x1::Interval, x2::Interval) = @cxx ibex::bwd_min(y.data,x1
 bwd_min(y::Interval, x1::Interval, x2::Interval) = pure(bwd_max!, y, x1, x2)
 bwd_atan2!(y::Interval, x1::Interval, x2::Interval) = @cxx ibex::bwd_atan2(y.data,x1.data,x2.data)
 bwd_atan2(y::Interval, x1::Interval, x2::Interval) = pure(bwd_atan2!, y, x1, x2)
+bwd_pow(y::Interval, x1::Interval, x2::Interval) = @cxx ibex::bwd_pow(y.data,x1.data,x2.data)
+bwd_pow!(y::Interval, x1::Interval, x2::Interval) = pure(bwd_pow,y,x1,x2)
+
+bwd_pow(y::Interval, n::Int, x::Interval) = @cxx ibex::bwd_pow(y.data,n,x.data)
+bwd_pow!(y::Interval, n::Int, x::Interval) = pure((y,x)->bwd_pow!(y,n,x),y,x)
+bwd_root(y::Interval, n::Int, x::Interval) = @cxx ibex::bwd_root(y.data,n,x.data)
+bwd_root!(y::Interval, n::Int, x::Interval) = pure((y,x)->bwd_root!(y,n,x),y,x)
+
+bwd_chi!(f::Interval, a::Interval, b::Interval, c::Interval) = @cxx ibex::bwd_chi(f.data,a.data,b.data,c.data)
+bwd_chi(f::Interval, a::Interval, b::Interval, c::Interval) = pure(bwd_atan2!, f, a, b,c)
+
+# FIXME - Implememnt these. Dont quite fit into pure
+# bwd_integer(x::Interval)
+# bwd_imod(x::Interval, y::Interval p::Float64)
 
 ## Printing/io
 ## ===========
@@ -333,26 +202,3 @@ cxx"""
 """
 print(x::Interval) = @cxx print_interval(x.data)
 show(x::Interval) = print(x)
-
-
-# bwd_atan2(y::Interval, x::Interval, x::Interval)
-# bwd_pow(y::Interval, x::Interval, x::Interval)
-# bwd_pow(y::Interval, n::Int, x::Interval)
-# bwd_root(y::Interval, n::Int, x::Interval)
-# bwd_chi(f::Interval, a::Interval, b::Interval, c::Interval)
-# bwd_integer(x::Interval)
-# bwd_imod(x::Interval, y::Interval p::Float64)
-
-# @cxx printme()
-# @show @cxx Interval::PI
-
-# f(X,Y,Z) = X + Y + Z
-
-# typealias CppType{T} Cxx.CppValue{Cxx.CppBaseType{T}}
-# IbexInterval = CppType{symbol("ibex::Interval")}
-# +(x::IbexInterval, y::IbexInterval) = @cxx plus(x,y)
-# ibexinterval(a,b) = @cxx ibex::Interval(a,b)
-# a = ibexinterval(0,10)
-# function ok{T}(a::Cxx.CppValue{Cxx.CppBaseType{T}}) = 20
-
-# end

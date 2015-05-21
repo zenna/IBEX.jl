@@ -28,7 +28,7 @@ import Base:  asin,
               max,
               min,
               sign
-import Base: copy, print, show
+import Base: copy, print, show, getindex, isequal
 
 cxx_includes = ["/home/zenna/Downloads/ibex-2.1.13/INSTALL/include",
                 "/home/zenna/Downloads/ibex-2.1.13/INSTALL/include/ibex"]
@@ -45,7 +45,13 @@ cxx"""
 """
 @compat Libdl.dlopen("libprim.so", Libdl.RTLD_LAZY|Libdl.RTLD_DEEPBIND|Libdl.RTLD_GLOBAL)
 @compat Libdl.dlopen("libibex.so", Libdl.RTLD_LAZY|Libdl.RTLD_DEEPBIND|Libdl.RTLD_GLOBAL)
+
+include("common.jl")
 include("interval.jl")
+include("symbolic/Expr.jl")
+include("symbolic/ExprCtr.jl")
+
+
 # end
 
 export
