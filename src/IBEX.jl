@@ -28,10 +28,11 @@ import Base:  asin,
               max,
               min,
               sign
-import Base: copy, print, show, getindex, isequal
+import Base: copy, print, show, getindex, isequal, string
 
-cxx_includes = ["/home/zenna/Downloads/ibex-2.1.13/INSTALL/include",
-                "/home/zenna/Downloads/ibex-2.1.13/INSTALL/include/ibex"]
+cxx_includes = ["/home/zenna/repos/ibex-lib2/INSTALL/include",
+                "/home/zenna/repos/ibex-lib2/INSTALL/include/ibex",
+                "/home/zenna/repos/IBEX.jl/src"]
 
 # function __init__()
 for cxx_include in cxx_includes
@@ -39,18 +40,27 @@ for cxx_include in cxx_includes
 end
 
 cxx"""
+    #include <iostream>
+    #include <sstream>
+    #include <string> 
     #include "ibex.h"
     using namespace ibex;
     using namespace std;
 """
-@compat Libdl.dlopen("libprim.so", Libdl.RTLD_LAZY|Libdl.RTLD_DEEPBIND|Libdl.RTLD_GLOBAL)
-@compat Libdl.dlopen("libibex.so", Libdl.RTLD_LAZY|Libdl.RTLD_DEEPBIND|Libdl.RTLD_GLOBAL)
+
+ibex_lib_dir = "/home/zenna/repos/ibex-lib2/INSTALL/lib"
+
+@compat Libdl.dlopen(joinpath(ibex_lib_dir,"libprim.so"), Libdl.RTLD_LAZY|Libdl.RTLD_DEEPBIND|Libdl.RTLD_GLOBAL)
+@compat Libdl.dlopen(joinpath(ibex_lib_dir,"libibex.so"), Libdl.RTLD_LAZY|Libdl.RTLD_DEEPBIND|Libdl.RTLD_GLOBAL)
+
+# @compat Libdl.dlopen("libprim.so", Libdl.RTLD_LAZY|Libdl.RTLD_DEEPBIND|Libdl.RTLD_GLOBAL)
+# @compat Libdl.dlopen("libibex.so", Libdl.RTLD_LAZY|Libdl.RTLD_DEEPBIND|Libdl.RTLD_GLOBAL)
 
 include("common.jl")
 include("interval.jl")
 include("symbolic/Expr.jl")
 include("symbolic/ExprCtr.jl")
-
+include("function/NumConstraint.jl")
 
 # end
 

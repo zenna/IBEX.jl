@@ -13,22 +13,16 @@ end
 ExprSymbol() = ExprSymbol(@cxx ibex::ExprSymbol::new_())
 ExprSymbol(n::Int) = (colvec = @cxx Dim::col_vec(n); ExprSymbol(@cxx ExprSymbol::new_(colvec)))
 
-@doc "Indexed expression" ->
-type ExprIndex <: ExprNode
+@doc "Constant expression" ->
+type ExprConstant <: ExprNode
   cxx
 end
 
-(+){T1<:ExprNode,T2<:ExprNode}(x::T1,y::T2) = auto(icxx"$(x.cxx) + $(y.cxx);")
-(-){T1<:ExprNode,T2<:ExprNode}(x::T1,y::T2) = auto(icxx"$(x.cxx) - $(y.cxx);")
-(/){T1<:ExprNode,T2<:ExprNode}(x::T1,y::T2) = auto(icxx"$(x.cxx) / $(y.cxx);")
-(*){T1<:ExprNode,T2<:ExprNode}(x::T1,y::T2) = auto(icxx"$(x.cxx) * $(y.cxx);")
-(^){T1<:ExprNode,T2<:ExprNode}(x::T1,y::T2) = auto(icxx"$(x.cxx) ^ $(y.cxx);")
-(>){T1<:ExprNode,T2<:ExprNode}(x::T1,y::T2) = auto(icxx"$(x.cxx) > $(y.cxx);")
-(>=){T1<:ExprNode,T2<:ExprNode}(x::T1,y::T2) = auto(icxx"$(x.cxx) >= $(y.cxx);")
-(<){T1<:ExprNode,T2<:ExprNode}(x::T1,y::T2) = auto(icxx"$(x.cxx) < $(y.cxx);")
-(<=){T1<:ExprNode,T2<:ExprNode}(x::T1,y::T2) = auto(icxx"$(x.cxx) <= $(y.cxx);")
-(==){T1<:ExprNode,T2<:ExprNode}(x::T1,y::T2) = auto(icxx"$(x.cxx) = $(y.cxx);")
+ExprConstant{T<:Real}(x::T) = auto(@cxx ExprConstant::new_scalar(x))
+ExprConstant(x::Interval) = auto(@cxx ExprConstant::new_scalar(x.data))
+auto{T<:CppAllType{symbol("ibex::ExprConstant")}}(x::T) = ExprConstant(x)
 
+type ExprIndex <: ExprNode cxx end
 type ExprVector <: ExprNode cxx end
 type ExprApply <: ExprNode cxx end
 type ExprChi <: ExprNode cxx end
@@ -108,33 +102,47 @@ auto{T<:CppAllType{symbol("ibex::ExprAtan")}}(x::T) = ExprAtan(x)
 auto{T<:CppAllType{symbol("ibex::ExprAcosh")}}(x::T) = ExprAcosh(x)
 auto{T<:CppAllType{symbol("ibex::ExprAsinh")}}(x::T) = ExprAsinh(x)
 auto{T<:CppAllType{symbol("ibex::ExprAtanh")}}(x::T) = ExprAtanh(x)
-# public:
 
-#   /* \brief Build a constraint expression. */
-#   ExprCtr(const ExprNode& e, CmpOp op);
+## Arithmetic
+## ==========
 
-#   /** The expression. */
-#   const ExprNode& e;
-#   /** The operator. */
-#   const CmpOp op;
-# };
+cxx"""
+ExprCtr isequal(const ibex::ExprNode &x, const ibex::ExprNode &y) {
+  return x = y;
+}
+"""
 
+(+){T1<:ExprNode,T2<:ExprNode}(x::T1,y::T2) = auto(icxx"$(x.cxx) + $(y.cxx);")
+(-){T1<:ExprNode,T2<:ExprNode}(x::T1,y::T2) = auto(icxx"$(x.cxx) - $(y.cxx);")
+(/){T1<:ExprNode,T2<:ExprNode}(x::T1,y::T2) = auto(icxx"$(x.cxx) / $(y.cxx);")
+(*){T1<:ExprNode,T2<:ExprNode}(x::T1,y::T2) = auto(icxx"$(x.cxx) * $(y.cxx);")
+(^){T1<:ExprNode,T2<:ExprNode}(x::T1,y::T2) = auto(icxx"$(x.cxx) ^ $(y.cxx);")
+(>){T1<:ExprNode,T2<:ExprNode}(x::T1,y::T2) = auto(icxx"$(x.cxx) > $(y.cxx);")
+(>=){T1<:ExprNode,T2<:ExprNode}(x::T1,y::T2) = auto(icxx"$(x.cxx) >= $(y.cxx);")
+(<){T1<:ExprNode,T2<:ExprNode}(x::T1,y::T2) = auto(icxx"$(x.cxx) < $(y.cxx);")
+(<=){T1<:ExprNode,T2<:ExprNode}(x::T1,y::T2) = auto(icxx"$(x.cxx) <= $(y.cxx);")
+(==){T1<:ExprNode,T2<:ExprNode}(x::T1,y::T2) = auto(@cxx isequal(x.cxx,y.cxx)) # auto(icxx"$(x.cxx) = $(y.cxx);")
 
-# CxxNumConstraint = CppType{symbol("ibex::NumConstraint")}
-
-# type NumConstraint
-#   cxx::CxxNumConstraint
-# end
-
-# inline NumConstraint::NumConstraint(const ExprSymbol& x1, const ExprCtr& c) : f(*new Function(x1,c.e)), op(c.op), own_f(true) { }
-
-
-# @doc "Build a constraint" ->
-# NumConstraint(Fnc& f, op::CmpOp=EQ, own_f::Bool=false) = @cxx ibex::NumConstraint(f.cxx, op.cxx, own_f)
-
-# for i = 1:20
-#   lhs = Expr(:call, NumConstraint, [:($(symbol("x$i"))::ExprSymbol) for i = 1:20]..., :(c::ExprCtr))
-
-#   rhs = cxx("NumConstraint(")
-# end
-# @doc NumConstraint
+asin{T<:ExprNode}(x::T) = auto(icxx"asin($(x.cxx));")
+sqrt{T<:ExprNode}(x::T) = auto(icxx"sqrt($(x.cxx));")
+exp{T<:ExprNode}(x::T) = auto(icxx"exp($(x.cxx));")
+log{T<:ExprNode}(x::T) = auto(icxx"log($(x.cxx));")
+cos{T<:ExprNode}(x::T) = auto(icxx"cos($(x.cxx));")
+sin{T<:ExprNode}(x::T) = auto(icxx"sin($(x.cxx));")
+tan{T<:ExprNode}(x::T) = auto(icxx"tan($(x.cxx));")
+acos{T<:ExprNode}(x::T) = auto(icxx"acos($(x.cxx));")
+asin{T<:ExprNode}(x::T) = auto(icxx"asin($(x.cxx));")
+atan{T<:ExprNode}(x::T) = auto(icxx"atan($(x.cxx));")
+cosh{T<:ExprNode}(x::T) = auto(icxx"cosh($(x.cxx));")
+sinh{T<:ExprNode}(x::T) = auto(icxx"sinh($(x.cxx));")
+tanh{T<:ExprNode}(x::T) = auto(icxx"tanh($(x.cxx));")
+acosh{T<:ExprNode}(x::T) = auto(icxx"acosh($(x.cxx));")
+asinh{T<:ExprNode}(x::T) = auto(icxx"asinh($(x.cxx));")
+atanh{T<:ExprNode}(x::T) = auto(icxx"atanh($(x.cxx));")
+abs{T<:ExprNode}(x::T) = auto(icxx"abs($(x.cxx));")
+atan2{T<:ExprNode}(x::T) = auto(icxx"atan2($(x.cxx));")
+max{T<:ExprNode}(x::T) = auto(icxx"max($(x.cxx));")
+min{T<:ExprNode}(x::T) = auto(icxx"min($(x.cxx));")
+sign{T<:ExprNode}(x::T) = auto(icxx"sign($(x.cxx));")
+-{T<:ExprNode}(x::T) = auto(icxx"-($(x.cxx));")
++{T<:ExprNode}(x::T) = auto(icxx"+($(x.cxx));")
